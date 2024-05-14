@@ -1,0 +1,16 @@
+syntax = "proto3";
+package chopsuey;
+
+message Machine {
+    string identifier = 1;
+}
+
+message ListMachinesRequest {}
+
+message ListMachinesReply {
+    repeated Machine machines = 2;
+}
+
+service ChopSuey {
+    rpc ListMachines (ListMachinesRequest) returns (ListMachinesReply);
+}

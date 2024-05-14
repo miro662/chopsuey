@@ -5,11 +5,11 @@ use serde_derive::Deserialize;
 
 use crate::wol::MagicPacket;
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct MacAddr([u8; 6]);
 
 /// Describes a single machine that can be woken up
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Machine {
     /// MAC address
     mac: MacAddr,
