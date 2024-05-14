@@ -1,6 +1,7 @@
 use std::{collections::HashMap, net::SocketAddr};
 
-use serde_derive::Deserialize;
+use log::info;
+use serde::Deserialize;
 use snafu::{ResultExt, Whatever};
 use tonic::{Request, Response, Status};
 
@@ -25,8 +26,9 @@ pub struct ChopSueyService {
 impl ChopSuey for ChopSueyService {
     async fn list_machines(
         &self,
-        _request: Request<ListMachinesRequest>,
+        request: Request<ListMachinesRequest>,
     ) -> Result<Response<ListMachinesReply>, Status> {
+        info!("recieved ListMachines RPC call from {:?}", request.local_addr());
         let response = ListMachinesReply {
             machines: self
                 .machines
@@ -44,6 +46,7 @@ impl ChopSuey for ChopSueyService {
         &self,
         request: Request<WakeUpRequest>,
     ) -> Result<Response<WakeUpReply>, Status> {
+        info!("recieved WakeUp RPC call from {:?}", request.local_addr());
         let machine_id = &request
             .get_ref()
             .machine
@@ -79,7 +82,8 @@ impl Server {
         let service = ChopSueyService {
             machines: self.machines,
         };
-
+        
+        info!("starting gRPC server at {}...", settings.address);
         TonicServer::builder()
             .add_service(ChopSueyServer::new(service))
             .serve(settings.address)

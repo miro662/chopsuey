@@ -1,6 +1,7 @@
 use std::{collections::HashMap, fs::File};
 
-use serde_derive::Deserialize;
+use log::info;
+use serde::Deserialize;
 use snafu::{ResultExt, Whatever};
 
 use crate::{machine::Machine, server::ServerSettings};
@@ -17,8 +18,10 @@ pub struct Config {
 
 impl Config {
     pub fn load() -> Result<Config, Whatever> {
-        let file = File::open("config.yml")
+        let path = "config.yml";
+        let file = File::open(path)
             .with_whatever_context(|_| "Cannot open config file".to_string())?;
+        info!("using config file from {}", path);
         let config = serde_yaml::from_reader(file)
             .with_whatever_context(|err| format!("Config deserialization error: {:?}", err))?;
         Ok(config)

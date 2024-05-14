@@ -1,7 +1,8 @@
 /// Machine management
 use std::net::IpAddr;
 
-use serde_derive::Deserialize;
+use log::trace;
+use serde::Deserialize;
 
 use crate::wol::MagicPacket;
 
@@ -21,6 +22,8 @@ pub struct Machine {
 impl Machine {
     /// Wakes up machine
     pub async fn wake_up(&self) -> Result<(), std::io::Error> {
+        trace!("sending magic packet to {:?}", self);
+        
         MagicPacket::new(&self.mac.0, &self.broadcast_ip)
             .send()
             .await?;
