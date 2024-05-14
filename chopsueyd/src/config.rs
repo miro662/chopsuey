@@ -24,7 +24,6 @@ impl Config {
         Ok(config)
     }
 
-
     pub fn server(&self) -> &ServerSettings {
         &self.server
     }

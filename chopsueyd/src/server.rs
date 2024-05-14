@@ -11,6 +11,8 @@ use tonic::transport::Server as TonicServer;
 use chopsuey::chop_suey_server::{ChopSuey, ChopSueyServer};
 use chopsuey::{ListMachinesReply, ListMachinesRequest, Machine as ProtoMachine};
 
+use self::chopsuey::{WakeUpReply, WakeUpRequest};
+
 mod chopsuey {
     tonic::include_proto!("chopsuey");
 }
@@ -23,7 +25,7 @@ pub struct ChopSueyService {
 impl ChopSuey for ChopSueyService {
     async fn list_machines(
         &self,
-        request: Request<ListMachinesRequest>,
+        _request: Request<ListMachinesRequest>,
     ) -> Result<Response<ListMachinesReply>, Status> {
         let response = ListMachinesReply {
             machines: self
@@ -36,6 +38,26 @@ impl ChopSuey for ChopSueyService {
         };
 
         Ok(Response::new(response))
+    }
+
+    async fn wake_up(
+        &self,
+        request: Request<WakeUpRequest>,
+    ) -> Result<Response<WakeUpReply>, Status> {
+        let machine_id = &request
+            .get_ref()
+            .machine
+            .as_ref()
+            .ok_or_else(|| Status::invalid_argument("Machine to be waken up not specified"))?
+            .identifier;
+
+        let machine = self.machines.get(machine_id).ok_or_else(|| {
+            Status::invalid_argument("Machine with this identifier does not exist")
+        })?;
+
+        let _ = machine.wake_up().await;
+
+        Ok(Response::new(WakeUpReply {}))
     }
 }
 

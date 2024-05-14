@@ -8,9 +8,18 @@ message Machine {
 message ListMachinesRequest {}
 
 message ListMachinesReply {
-    repeated Machine machines = 2;
+    repeated Machine machines = 1;
+}
+
+message WakeUpRequest {
+    Machine machine = 1;
+}
+
+message WakeUpReply {
+
 }
 
 service ChopSuey {
     rpc ListMachines (ListMachinesRequest) returns (ListMachinesReply);
+    rpc WakeUp (WakeUpRequest) returns (WakeUpReply);
 }
